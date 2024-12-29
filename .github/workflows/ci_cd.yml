@@ -30,9 +30,14 @@ jobs:
         until ( npm i -f ); do
           echo "Retrying dependencies and Cypress installation..."
         done
+    - name: Install cypress
+      run: |
+        until ( npm install cypress --save-dev -f); do
+          echo "Retrying dependencies and Cypress installation..."
+        done
         
-    - name: Build the project
-      run: npm run build
+    # - name: Build the project
+    #   run: npm run build
 
     - name: Start the application server
       run: npm run dev &
@@ -43,11 +48,6 @@ jobs:
         echo "Waiting for server to start..."
         sleep 10 # Adjust based on how long it takes for your server to start
         
-    - name: Install cypress
-      run: |
-        until ( npm install cypress --save-dev -f); do
-          echo "Retrying dependencies and Cypress installation..."
-        done
     - name: Run Cypress tests
       run: npx cypress run
 
