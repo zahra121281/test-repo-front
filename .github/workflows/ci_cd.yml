@@ -27,13 +27,10 @@ jobs:
         
     - name: Install dependencies
       run: |
-        until npm i -f; do
-          echo "Retrying npm install..."
+        until (npm i -f && npm install cypress --save-dev); do
+          echo "Retrying dependencies and Cypress installation..."
         done
-    - name: Install cypress
-      run: npm install cypress --save-dev
-      
-
+        
     - name: Build the project
       run: npm run build
 
