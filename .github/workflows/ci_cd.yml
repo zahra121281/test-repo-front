@@ -25,14 +25,14 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         
-    - name: Install cypress
-      run: npm install cypress --save-dev
-      
     - name: Install dependencies
       run: |
         until npm i -f; do
           echo "Retrying npm install..."
         done
+    - name: Install cypress
+      run: npm install cypress --save-dev
+      
 
     - name: Build the project
       run: npm run build
