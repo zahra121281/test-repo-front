@@ -1,3 +1,13 @@
+name: CI/CD  
+
+on:  
+  push:  
+    branches:  
+      - dev  
+  pull_request:  
+    branches:  
+      - dev  
+
 jobs:  
   build:  
     runs-on: ubuntu-latest
@@ -25,42 +35,46 @@ jobs:
       run: npm run build
 
     - name: Start the application server
-      run: nohup npm run dev &> server.log &
+      run: npm run dev &
       env:
         NODE_ENV: production
-
-    - name: Wait for server to start and check if port 5173 is listening
+    - name: Wait for server to start
       run: |
         echo "Waiting for server to start..."
-        sleep 30 # Increase this based on your app's startup time
-        echo "Checking if port 5173 is listening..."
-        ss -tuln | grep ":5173" || echo "Port 5173 is not listening" # Check if port 5173 is open and listening
-        cat server.log  # Optional: Print server logs to debug
-  test:  
-    needs: build  # Ensures this job waits for the build job to finish
-    runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [20.x]
-
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
-
-    - name: Set up Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node-version }}
-
-    - name: Install Cypress
+        sleep 10 # Adjust based on how long it takes for your server to start
+        
+    - name: Install cypress
       run: |
         until ( npm install cypress --save-dev -f); do
           echo "Retrying dependencies and Cypress installation..."
         done
-
     - name: Run Cypress tests
       run: npx cypress run
+
+  # test:  
+  #   needs: build  # Ensures this job waits for the build job to finish
+  #   runs-on: ubuntu-latest
+
+  #   strategy:
+  #     matrix:
+  #       node-version: [20.x]
+
+  #   steps:
+  #   - name: Checkout repository
+  #     uses: actions/checkout@v2
+
+  #   - name: Set up Node.js ${{ matrix.node-version }}
+  #     uses: actions/setup-node@v1
+  #     with:
+  #       node-version: ${{ matrix.node-version }}
+
+    # - name: Install cypress
+    #   run: |
+    #     until ( npm install cypress --save-dev -f); do
+    #       echo "Retrying dependencies and Cypress installation..."
+    #     done
+    # - name: Run Cypress tests
+    #   run: npx cypress run
 
 # name: CI/CD  
 
