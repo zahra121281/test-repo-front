@@ -33,7 +33,7 @@ jobs:
 
     - name: Install Cypress and start-server-and-test
       run: |
-        npm install --save-dev cypress start-server-and-test
+        npm install cypress --save-dev start-server-and-test -f
 
     - name: Run Cypress tests with server
       run: npx start-server-and-test 'npm run dev' http://127.0.0.1:5173 cypress:run
