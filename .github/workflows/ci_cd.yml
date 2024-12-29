@@ -1,15 +1,15 @@
-name: CI/CD  
+name: CI/CD
 
-on:  
-  push:  
-    branches:  
-      - dev  
-  pull_request:  
-    branches:  
-      - dev  
+on:
+  push:
+    branches:
+      - dev
+  pull_request:
+    branches:
+      - dev
 
-jobs:  
-  build:  
+jobs:
+  build:
     runs-on: ubuntu-latest
 
     strategy:
@@ -24,30 +24,33 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-        
+
     - name: Install dependencies
       run: |
         until ( npm i -f ); do
           echo "Retrying dependencies and Cypress installation..."
         done
-    - name: Install cypress
+
+    - name: Install Cypress
       run: |
-        until ( npm install cypress --save-dev -f); do
-          echo "Retrying dependencies and Cypress installation..."
+        until ( npm install cypress --save-dev -f ); do
+          echo "Retrying Cypress installation..."
         done
-        
-    # - name: Build the project
-    #   run: npm run build
 
     - name: Start the application server
       run: npm run dev &
       env:
         NODE_ENV: production
+
     - name: Wait for server to start
       run: |
         echo "Waiting for server to start..."
-        sleep 10 # Adjust based on how long it takes for your server to start
-        
+        for i in {1..20}; do
+          curl -s http://127.0.0.1:5173 > /dev/null && break
+          echo "Server not ready yet. Retrying in 3 seconds..."
+          sleep 3
+        done
+
     - name: Run Cypress tests
       run: npx cypress run
 
