@@ -24,7 +24,10 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-
+        
+    - name: Install cypress
+      run: npm install cypress --save-dev
+      
     - name: Install dependencies
       run: |
         until npm i -f; do
