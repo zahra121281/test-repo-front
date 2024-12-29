@@ -35,7 +35,7 @@ jobs:
       run: npm run build
 
     - name: Start the application server
-      run: npm run serve &
+      run: npm run dev &
       env:
         NODE_ENV: production
     - name: Wait for server to start
