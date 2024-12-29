@@ -39,7 +39,8 @@ jobs:
         echo "Starting application server..."
         npm run dev & # Run the server in the background
         SERVER_PID=$! # Capture the process ID of the server
-        for i in {1..20}; do
+        ps aux | grep 5173
+        for i in {1..5}; do
           curl -s http://127.0.0.1:5173 > /dev/null && break
           echo "Server not ready yet. Retrying in 3 seconds..."
           sleep 3
