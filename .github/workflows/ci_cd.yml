@@ -3,13 +3,13 @@ name: CI/CD
 on:  
   push:  
     branches:  
-      - dev  # Replace 'main' with your primary branch name  
+      - dev  
   pull_request:  
     branches:  
-      - dev  # Replace 'main' with your primary branch name  
+      - dev  
 
 jobs:  
-  build-and-test:  
+  build:  
     runs-on: ubuntu-latest
 
     strategy:
@@ -30,9 +30,74 @@ jobs:
         until npm i -f; do
           echo "Retrying npm install..."
         done
-      
-    - name: Build
-      run: npm run dev
-      
-    - name: Run the tests
+
+    - name: Build the project
+      run: npm run build
+
+    - name: Start the application server
+      run: npm run serve &
+      env:
+        NODE_ENV: production
+    - name: Wait for server to start
+      run: |
+        echo "Waiting for server to start..."
+        sleep 10 # Adjust based on how long it takes for your server to start
+
+  test:  
+    needs: build  # Ensures this job waits for the build job to finish
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [20.x]
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    - name: Run Cypress tests
       run: npx cypress run
+
+# name: CI/CD  
+
+# on:  
+#   push:  
+#     branches:  
+#       - dev  # Replace 'main' with your primary branch name  
+#   pull_request:  
+#     branches:  
+#       - dev  # Replace 'main' with your primary branch name  
+
+# jobs:  
+#   build-and-test:  
+#     runs-on: ubuntu-latest
+
+#     strategy:
+#       matrix:
+#         node-version: [20.x]
+
+#     steps:
+#     - name: Checkout repository
+#       uses: actions/checkout@v2
+
+#     - name: Set up Node.js ${{ matrix.node-version }}
+#       uses: actions/setup-node@v1
+#       with:
+#         node-version: ${{ matrix.node-version }}
+
+#     - name: Install dependencies
+#       run: |
+#         until npm i -f; do
+#           echo "Retrying npm install..."
+#         done
+      
+#     - name: Build
+#       run: npm run dev
+      
+#     - name: Run the tests
+#       run: npx cypress run
